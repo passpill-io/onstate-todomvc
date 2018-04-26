@@ -1,4 +1,4 @@
-import onState from 'onState';
+import onState from 'onstate';
 import Utils from './utils';
 
 // Try to recover the state from the localStorage

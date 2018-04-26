@@ -7,13 +7,12 @@ var ENTER_KEY = 13;
 
 class TodoApp extends React.Component {
 	componentDidMount () {
-		var me = this;
 
 		// Here the magic happens. Everytime that the
 		// state is updated the app will re-render.
 		// A real data driven app.
-		store.on('state', function(){
-			me.forceUpdate();
+		store.on('state', () => {
+			this.forceUpdate();
 		});
 	}
 

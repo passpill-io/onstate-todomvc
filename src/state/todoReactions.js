@@ -50,6 +50,7 @@ store.on('todo:create', function( text ){
  * @param  { FreezerNode } The todo to delete.
  */
 store.on('todo:delete', function( todo ){
+	var index = getTodoIndex(todo);
 
 	// Since we are receiving the todo to delete from
 	// the arguments. We can use directly instead of
@@ -57,8 +58,8 @@ store.on('todo:delete', function( todo ){
 	todo.ui.status = 'deleting';
 
 	setTimeout( function(){
-		// We just remove the todo from teh list
-		store.todos.splice( getTodoIndex(todo), 1 );
+		// We just remove the todo from the list
+		store.todos.splice( index, 1 );
 
 		// Save the state in localStorage
 		Utils.store('freezerTodos', store);
@@ -73,6 +74,7 @@ store.on('todo:delete', function( todo ){
  * @param  {String} text    The new text for the todo.
  */
 store.on('todo:update', function( todo, text ){
+	var index = getTodoIndex(todo);
 	// Set the todo in an 'updating' state
 	// to let the user know.
 	// The updated node is returned.
@@ -80,7 +82,7 @@ store.on('todo:update', function( todo, text ){
 
 	// Call the server
 	setTimeout( function(){
-		var target = store.todos[ getTodoIndex(todo) ];
+		var target = store.todos[ index ];
 
 		target.model.title = text;
 		target.ui.status = 'ready';
@@ -110,16 +112,13 @@ store.on('todo:clearCompleted', function(){
 	// Let's mark all the completed nodes as deleting
 	for( var i = store.todos.length - 1; i>= 0; i-- ){
 		if( store.todos[i].model.completed ){
-			// Pivoting makes us to have always the updated
-			// reference to todos.
-			todos = store.todos[i].set({status: 'deleting'});
+			store.todos[i].ui.status = 'deleting';
 			toRemove.push( i );
 		}
 	}
 
 	// Call the server
 	setTimeout( function(){
-
 
 		// Remove all the completed children now.
 		toRemove.forEach( function( i ){
@@ -152,7 +151,7 @@ store.on('todo:toggle', function( todo ){
 var getTodoIndex = function( todo ){
 	var i = 0,
 		found = false,
-		todos = store.get().todos
+		todos = store.todos
 	;
 
 	while( i<todos.length && found === false ){

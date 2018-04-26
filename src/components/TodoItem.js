@@ -18,19 +18,19 @@ export default class TodoItem extends React.Component {
 	}
 
 	handleEdit () {
-		this.props.todo.ui.set({status: 'editing'});
+		this.props.todo.ui.status = 'editing';
 	}
 
 	handleKeyDown (event) {
 		if (event.which === ESCAPE_KEY) {
-			todo.ui.set({status: 'ready'});
+			todo.ui.status = 'ready';
 		} else if (event.which === ENTER_KEY) {
 			this.handleUpdate();
 		}
 	}
 
 	handleChange (event) {
-		this.props.todo.ui.set({ input: event.target.value }).now();
+		this.props.todo.ui.input = event.target.value;
 	}
 
 	/**
@@ -42,7 +42,7 @@ export default class TodoItem extends React.Component {
 	componentDidUpdate (prevProps) {
 		var status = this.props.todo.ui.status;
 		if (prevProps.todo.ui.status != status && status == 'editing') {
-			var node = React.findDOMNode(this.refs.editField);
+			var node = this.refs.editField;
 			node.focus();
 			node.setSelectionRange(node.value.length, node.value.length);
 		}
@@ -64,9 +64,9 @@ export default class TodoItem extends React.Component {
 						ref="editField"
 						className="edit"
 						value={ todo.ui.input }
-						onBlur={this.handleUpdate}
-						onChange={this.handleChange}
-						onKeyDown={this.handleKeyDown} />
+						onBlur={ () => this.handleUpdate() }
+						onChange={ e => this.handleChange(e) }
+						onKeyDown={ e => this.handleKeyDown(e) } />
 					<span className="loadingMessage">Saving...</span>
 				</div>
 			);
@@ -78,7 +78,7 @@ export default class TodoItem extends React.Component {
 						type="checkbox"
 						checked={ todo.model.completed }
 						onChange={ () => store.emit( 'todo:toggle', this.props.todo ) } />
-					<label onDoubleClick={this.handleEdit}>
+					<label onDoubleClick={ () => this.handleEdit() }>
 						{ todo.model.title }
 					</label>
 					<button className="destroy" onClick={ () => store.emit( 'todo:delete', this.props.todo ) } />
